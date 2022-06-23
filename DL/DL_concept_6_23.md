@@ -1,4 +1,5 @@
-﻿# 딥러닝 핵심 개념
+# 딥러닝 핵심 개념
+ 
 ## 전통적인 머신러닝과 딥러닝
 
 전통적인 머신러닝과 딥러닝의 차이는  시대적인 차이가 아니라 모델에서 인공신경망 사용 유무에 있다. 인공신경망도 결국 펼치면 하나의 함수인데 어떤 차이가 있을까?
@@ -22,9 +23,11 @@
  이렇게 기존 지식을 가져와 학습하는데 이용하는 것을 Transfer Learning(전이학습)이라고 한다. 물론 원래 모델이 해결하려 했던 문제와 우리가 해결하려고 하는 문제의 domain이 어느정도 맞아야하며 데이터의 종류도 같아야한다.
 
 ### 왜 지금 딥러닝인가?
+
 시대가 변하면서 데이터의 송수신 환경이 좋아지고 데이터의 양이 상당히 많아졌다. 또한 데이터의 저작권 문제들이 해결되면서 많은 데이터를 다룰 수 있게 되었다. 딥러닝의 경우 parameter의 수가 많기 때문에 data가 적다면 underfitting이 될 수도 ovetfitting이 될 수도 있는 문제가 있기 때문에 충분히 많은 데이터가 필요하다. 또한 컴퓨팅적 리소스의 발전도 딥러닝이 등장할 수 있게 했다. 딥러닝의 연산은 대부분 기본적인 산술연산이므로 어느정도의 연산을 수행할 수 있는 GPU의 병렬연산을 통해 연산을 훨씬 빠르게 수행할 수 있게 했다.
 
 ### 머신러닝과 딥러닝의 차이?
+
 머신러닝과 딥러닝은 그 모델을 활용, 학습시키는 부분에 있어 차이가 있다. workflow는 둘다 머신러닝을 기반으로 하기 때문에 당연히 비슷하다. 그러나 feature를 선정하는 부분에 있어서 머신러닝과 딥러닝의 큰 차이가 존재한다. 머신러닝의 경우 feature selection과 feature extraction에 상당히 많은 노력을 쏟아야하는 반면 딥러닝의 경우 해당 작업을 모델이 대신 해준다. 이는 앞서 말한 작은 부분에서 큰 부분으로 추상화를 진행하는 것과 관련이 있다. 그렇게 학습을 진행하면서 어떤 추상화된 부분이 중요하고 중요하지 않은지 모델이 학습하는 것이다. 이러한 과정을 머신러닝에서 보면 feature를 추가하거나 제거하는 과정으로 볼 수도 있다. 
 
 > 사람의 손을 찍은 X-ray 사진을 보고 나이를 맞히는 모델을 만든다고 했을 때, 머신러닝의 경우는 어떤 특징이 중요할지 직접 feature를 정해서 데이터를 얻고 모델에 넣어줘야한다. 반면에 딥러닝은 이미지의 픽셀을 데이터로 넣어주면 모델이 학습하면서 중요한 특징들을 뽑아낸다.
@@ -46,6 +49,7 @@ perceptron
 	2. 선형 조합의 결과에 Activation function(활성화 함수)를 적용한다. 
 	
 #### Activation function 
+
 activation function은 입력데이터에 대해서 어떤 출력을 내보낼지 결정한다. activation function은 non-linear function으로 만일 activation function이 linear function이라면 아무리 많은 perceptron과 layer를 쌓아도 결국 해당 신경망은 linear combination이 될 수 밖에 없고 그렇다면 해당 모델은 linear 한 문제 밖에 풀 수 없게 된다. 
 그렇기 때문에 non-linear function인 activation function을 적용하여 비선형 문제를 풀 수 있게 한다. 
 
@@ -54,7 +58,9 @@ activation funtion
 : 이전 layer의 모든 입력에 대한 가중합을 받아 출력값을 생성하여 다음 layer로 전달하는 non-linear function이다.
 
 
-결국 문제를 푸는데 있어서 중요한 것은 적합한 $\theta$ 값을 찾는 것에 있고 이는 Cost function을 최소화 하는 $\theta$ 를 구하는 것으로 해결할 수 있다. 그러나 layer를 갖는 ANN 구조에서는 output에 대한 cost fuction으로 모든 $\theta$를 조절할 수 없다. cost function을 각각의 layer에 적용하면서 최적의 $\theta$값을 찾아야 한다. (이는 layer의 미분과 cost function의 곱으로 해결한다.)
+결국 문제를 푸는데 있어서 중요한 것은 적합한 $\theta$ 값을 찾는 것에 있고 이는 Cost function을 최소화 하는 $\theta$ 를 구하는 것으로 해결할 수 있다. 
+그러나 layer를 갖는 ANN 구조에서는 output에 대한 cost fuction으로 모든 $\theta$를 조절할 수 없다. 
+cost function을 각각의 layer에 적용하면서 최적의 $\theta$값을 찾아야 한다. (이는 layer의 미분과 cost function의 곱으로 해결한다.)
 
 activations function들을 적용했을 때 발생하는 문제들을 해결하기 위해 다른 activation function들이 계속 생겨났다.
 - step fuction : 미분이 정의되지 않는 부분을 제외하고 모든 미분 값이 0
@@ -115,4 +121,4 @@ Hidden Layer
 Output Layer
 : 모델의 최종 연산 결과를 내보내는 신경망의 출구 Layer, 문제에 따라 이후의 처리를 정하게 된다. activation function을 적용하는 것과 유사하게 sigmoid, softmax 등을 적용하여 문제에 맞는 output을 출력하도록 한다.
 
-	> 다중 클래스 분류의 경우 output에 softmax를 적용하여 해당 클래스일 확률을 출력하게 하고 이를 label과 비교해 cross-entropy를 계산하여 cost function을 정의한다.
+> 다중 클래스 분류의 경우 output에 softmax를 적용하여 해당 클래스일 확률을 출력하게 하고 이를 label과 비교해 cross-entropy를 계산하여 cost function을 정의한다.
