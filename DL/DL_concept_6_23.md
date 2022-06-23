@@ -51,7 +51,9 @@ activation function은 입력데이터에 대해서 어떤 출력을 내보낼�
 activation funtion
 : 이전 layer의 모든 입력에 대한 가중합을 받아 출력값을 생성하여 다음 layer로 전달하는 non-linear function이다.
 
-결국 문제를 푸는데 있어서 중요한 것은 적합한 $\theta$값을 찾는 것에 있고 이는 Cost function을 최소화 하는 $\theta$를 구하는 것으로 해결할 수 있다. 그러나 layer를 갖는 ANN 구조에서는 output에 대한 cost fuction으로 모든 $\theta$를 조절할 수 없다. cost function을 각각의 layer에 적용하면서 최적의 $\theta$값을 찾아야 한다.( 이는 layer의 미분과 cost function의 곱으로 해결한다.)
+결국 문제를 푸는데 있어서 중요한 것은 적합한 $\theta$ 값을 찾는 것에 있고 이는 Cost function을 최소화 하는 $\theta$ 를 구하는 것으로 해결할 수 있다. 
+그러나 layer를 갖는 ANN 구조에서는 output에 대한 cost fuction으로 모든 $\theta$를 조절할 수 없다. cost function을 각각의 layer에 적용하면서 최적의 $\theta$값을 찾아야 한다. 
+(이는 layer의 미분과 cost function의 곱으로 해결한다.)
 
 activations function들을 적용했을 때 발생하는 문제들을 해결하기 위해 다른 activation function들이 계속 생겨났다.
 - step fuction : 미분이 정의되지 않는 부분을 제외하고 모든 미분 값이 0
