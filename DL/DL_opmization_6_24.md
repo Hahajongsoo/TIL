@@ -52,5 +52,6 @@ training data만 고려된 Cost function을 최소화 하는 것은 Overfitting�
 > 학습은 epoch에 대한 반복문과 batch에 대한 반복문의 이중 반복문으로 진행된다고 볼 수 있다. epoch는 전체 학습 데이터를 한 번씩 모두 학습시킨 횟수이고 batch size는 우리 가정한 data size이며 batch size만큼의 데이터에 대해서 gradient descent를 적용한 횟수를 iteration으로 본다.
 
 ![enter image description here](https://image.slidesharecdn.com/random-170910154045/85/-49-320.jpg?cb=1505089848)
+
 데이터의 사이즈 말고도 gradient descent의 방향에 대해서도 조절하는 방법도 있다. step에 momentum을 적용하여 관성을 적용한다면 얕은 local minima의 경우 빠져나올 수 있게 된다. 
 
