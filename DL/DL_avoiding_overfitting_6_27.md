@@ -87,3 +87,8 @@ batch-normalizer는 batch 의 분포를 다른 위치와 다른 스케일로 바
 2. 학습의 안정성(gradient vanishing을 해결한다.)
 3. 정규화(Overfitting을 억제한다.)
 
+참고
+- https://eehoeskrap.tistory.com/430
+- https://lifeignite.tistory.com/47
+- https://www.youtube.com/watch?v=m61OSJfxL0U
+
