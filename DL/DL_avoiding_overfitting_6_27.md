@@ -16,7 +16,9 @@ dropout은 학습을 진행할 때, **batch마다** layer별로 **일정 비율�
 
 > 물론 우리는 hidden layer에서 모델이 **어떤** 특성을 **왜** 바라보고 있는지는 알 수 없다. 하지만 이전에 설명한 것 처럼 layer의 동작을 low level에서는 국지적인 특성을, high level에선 좀 더 큰 구조를 추상화하고 있다고 생각, 상상할 수 있기 때문에 Dropout의 원리를 설명하고 이해할 수 있을 것이다.
 
-<center><img src="https://www.researchgate.net/publication/340700034/figure/fig3/AS:881306405724163@1587131229956/Dropout-Strategy-a-A-standard-neural-network-b-Applying-dropout-to-the-neural.ppm" width='60%' > </center>
+<center>
+  <img src="https://miro.medium.com/max/875/1*EinUlWw1n8vbcLyT0zx4gw.png" width='60%'>
+</center>
 
 
 dropout의 장점은 바로 model ensemble과 같은 효과를 낸다는 점에 있다. batch 마다 켜져있는 perceptron이 다르기 때문에 그 때마다 다른 특성을 바라보게 되고 그 결과, 각각 다른 model이 학습하는 것 처럼 볼 수 있다. 
@@ -55,7 +57,10 @@ Whitening
 
 이러한 ICS를 해결하기 위한 방법이 바로  Batch Normalization이고 layer마다 normalization을 적용하여 이를 해결한다.
 
-![enter image description here](https://miro.medium.com/max/1153/1*xQhPvRh08oKFC63swgWr_w.png)
+
+<center>
+  <img src="https://miro.medium.com/max/1153/1*xQhPvRh08oKFC63swgWr_w.png" width='40%'>
+</center>
 
 1. mini-batch의 평균을 구하고
 2. mini-batch의 분산을 구하고
