@@ -1,3 +1,4 @@
+#MLOps
 # Seldon Core
 
 - 셀든코어는 ML모델을 준비된 REST/gRPC 마이크로 서비스 제품으로 변환시켜준다.
@@ -49,3 +50,4 @@ Read more about [Seldon Deployment CRD on its dedicated documentation page](htt
 서비스 오케스트레이터는 intra-graph 트래픽 관리를 담당한다. 서비스 오케스트레이터는 CRD에서 inference graph 구조를 읽고 추론 요청을 받았을 때, 그래프의 각각의 노드에 적절한 순서로 통과되도록 한다.
 
 Seldon 에서 router, combiner, transformer 같은 복잡한 그래프 구성요소들을 사용할 수 있다.
+
