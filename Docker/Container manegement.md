@@ -1,13 +1,13 @@
 #Docker #Ops #fastcampus
 
 # Container life cycle
-![[Pasted image 20221031131837.png]]
+![](images/1.png)
 도커의 경우 실행상태로 가는 방법이 두 가지가 존재한다.
 - docker run 을 이용
 - docker create로 컨테이너를 만들고 start로 실행
 실행 중인 컨테이너를 pause할 수 있다.
 stop 명령어로 중단할 수도 있는데, 이 경우 컨테이너가 삭제되지는 않는다. 
-![[Pasted image 20221031163934.png]]
+![[images/2.png]]
 좀 더 자세한 도식도 
 
 ## 컨테이너 시작
@@ -96,11 +96,11 @@ docker container prune
 ***커맨드 (Command)**
 도커 컨테이너가 실행할 때 수행할 명령어 혹은 엔트리포인트에 지정된 명령어에 대한 인자값
 
-![[Pasted image 20221031172938.png]]
+![[images/4.png]]
 둘 다 사용되는 경우, 이러한 형태로 엔트리포인트가 프리픽스 처럼 지정되고 그 뒤에 커맨드가 전달되는 형태로 전체 커맨드가 완성이 된다.
 
 ## Dockerfile의 엔트리 포인트와 커맨드
-![[Pasted image 20221031173140.png]]
+![[images/5.png]]
 dockerfile 내에 CMD는 필수적으로 들어가는 요소이고 entrypoint는 선택적으로 넣을 수 있는 값이다. 
 cmd는 도커 이미지가 실행될 때, 기본적으로 실행될 명령어를 지정한다.
 entrypoint는 cmd가 실행되기 앞서 실행되는 프로그램으로 생각하면 된다.
@@ -123,3 +123,44 @@ docker run --env-file [file]
 ```
 유명한 프레임워크들의 이미지 공식문서를 확인해보면 환경변수로 해당 컨테이너 실행방법을 제어하는 것을 확인할 수 있다.
 https://hub.docker.com/_/nginx
+
+# 명령어 실행
+```shell
+# 실행중인 컨테이너에 명령어를 실행
+docker exec [container] [command]
+
+# my-nginx 컨테이너에 bash 셸로 접속하기
+docker exec -i -t my-nginx bash
+
+# my-nginx 컨테이너의 환경변수 확인하기
+docker exec my-nginx env
+```
+- 기존에 실행중인 컨테이너에 대해서 특정 이슈 해결을 위해서 가장 빈번하게 사용되는 명령어
+- 예를들어 `my-nginx`  컨테이너에서 발생한 이슈를 해결하려면 해당 컨테이너에 접근하여 문제를 해결해야 한다. 이때 exec를 사용하여 해당 컨테이너에 접속하여 문제를 해결할 수 있다. 이 경우 해당 컨테이너에 셸이 설치되어 있어야 한다.
+
+# 네트워크
+## 도커 네트워크 구조
+![](images/6.png)
+- `eth0` : 호스트에서 사용하는 기본 네트워크
+- `veth` : virtual eth
+
+
+- 도커를 호스트 운영체제에 설치를 하고 나면 기본적으로 여러가지 네트워크 드라이브들이 설치가 된다.
+- 기본적으로는 도커 컨테이너를 실행할 때 사용할 네트워크를 지정할 수 있다. 따로 지정하지 않으면 기본적으로 생성되는 docker0 이라고 하는 브릿지 네트워크를 사용한다.
+- 컨테이너 내부에서 네트워크 장치 목록을 확인해보면 `eth0` 과 `l0(127.0.0.1, 루프백)` 두 가지 장치가 설치되어 있는 것을 확인할 수 있다. 내부적으로는 ip를 가지게 된다. 그리고 이것이 호스트 서버와 연결 되어야 한다. 이때  `docekr0`이 연결하는 역할을 한다.
+- 컨테이너가 생성됨과 동시에 호스트에는 컨테이터의 `eth0` 에 대응되는 `가상 eth` 가 하나씩 생기게 된다.
+
+## 컨테이너 포트 노출
+컨테이너의 포트를 호스트의 IP:PORT와 연결하여 서비를 노출한다.
+```shell
+docker run -p [HOST IP:PORT]:[CONTAINER PORT] [container]
+
+# nginx 컨테이너의 80번 포트를 호스트 모든 IP의 80번 포트와 연결하여 실행
+docekr run -d -p 80:80 nginx
+
+# nginx 컨테이너의 80번 포트를 호스트 127.0.0.1 IP의 80번 포트와 연결하여 실행
+docker run -d -p 127.0.0.1:80:80 nginx
+
+# nginx 컨테이너의 80번 포트를 호스트의 사용 가능한 포트와 연결하여 실행
+docker run -d -p 80 nginx
+```
