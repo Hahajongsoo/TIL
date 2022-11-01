@@ -7,7 +7,7 @@
 - docker create로 컨테이너를 만들고 start로 실행
 실행 중인 컨테이너를 pause할 수 있다.
 stop 명령어로 중단할 수도 있는데, 이 경우 컨테이너가 삭제되지는 않는다. 
-![[images/2.png]]
+![](images/2.png)
 좀 더 자세한 도식도 
 
 ## 컨테이너 시작
@@ -96,11 +96,11 @@ docker container prune
 ***커맨드 (Command)**
 도커 컨테이너가 실행할 때 수행할 명령어 혹은 엔트리포인트에 지정된 명령어에 대한 인자값
 
-![[images/4.png]]
+![](images/4.png) 
 둘 다 사용되는 경우, 이러한 형태로 엔트리포인트가 프리픽스 처럼 지정되고 그 뒤에 커맨드가 전달되는 형태로 전체 커맨드가 완성이 된다.
 
 ## Dockerfile의 엔트리 포인트와 커맨드
-![[images/5.png]]
+![](images/5.png) 
 dockerfile 내에 CMD는 필수적으로 들어가는 요소이고 entrypoint는 선택적으로 넣을 수 있는 값이다. 
 cmd는 도커 이미지가 실행될 때, 기본적으로 실행될 명령어를 지정한다.
 entrypoint는 cmd가 실행되기 앞서 실행되는 프로그램으로 생각하면 된다.
@@ -140,7 +140,7 @@ docker exec my-nginx env
 
 # 네트워크
 ## 도커 네트워크 구조
-![](images/6.png)
+![](images/6.png) 
 - `eth0` : 호스트에서 사용하는 기본 네트워크
 - `veth` : virtual eth
 
@@ -150,7 +150,7 @@ docker exec my-nginx env
 - 컨테이너 내부에서 네트워크 장치 목록을 확인해보면 `eth0` 과 `l0(127.0.0.1, 루프백)` 두 가지 장치가 설치되어 있는 것을 확인할 수 있다. 내부적으로는 ip를 가지게 된다. 그리고 이것이 호스트 서버와 연결 되어야 한다. 이때  `docekr0`이 연결하는 역할을 한다.
 - 컨테이너가 생성됨과 동시에 호스트에는 컨테이터의 `eth0` 에 대응되는 `가상 eth` 가 하나씩 생기게 된다.
 
-## 컨테이너 포트 노출
+## 컨테이너 포트 노출 (publish)
 컨테이너의 포트를 호스트의 IP:PORT와 연결하여 서비를 노출한다.
 ```shell
 docker run -p [HOST IP:PORT]:[CONTAINER PORT] [container]
@@ -164,3 +164,43 @@ docker run -d -p 127.0.0.1:80:80 nginx
 # nginx 컨테이너의 80번 포트를 호스트의 사용 가능한 포트와 연결하여 실행
 docker run -d -p 80 nginx
 ```
+
+## expose vs publish
+```shell
+# expose 옵션은 그저 문서화 용도
+docker run -d --expose 80 nginx
+
+# publish 옵션은 실제 포트를 바인딩
+docker run -d -p nginx
+```
+- expose는 dockerfile을 빌드할 때도 있는 명령어로 docker run 명령어에도 옵션이 존재한다.
+- 문서화하는 용도일 뿐 실제로 파인딩을 하지는 않는다.
+
+## 도커 네트워크 드라이버
+
+### 네트워크 종류로 구분
+![](images/Pasted%20image%2020221101113514.png)
+https://docs.docker.com/network/ 의 Network drivers에서 도커에서 지원하는 드라이버 목록 확인 가능
+- 드라이버를 native driver와 remote driver로 나눌 수 있다.
+
+### 네트워크 동작 방식으로 구분
+![](images/Pasted%20image%2020221101114013.png)
+- single host와 multi host로 나눌 수 있다.
+- 네트워크 드라이버를 선택해서 새로운 브릿지를 만들 수도 있다.
+- overlay의 경우 여러 서버가 존재한다고 했을 때, 각각의 서버에 있는 컨테이너들을 연결시키는 가상의 네트워크이다. 멀티호스트로 동작하기 때문에 주로 오케스트레이션 시스템에서 많이 사용하는 네트워크 드라이브이다.
+
+### 명령어 사용
+```shell
+docker run --net [network] 
+```
+해당 명령어로 어떤 네트워크를 사용할지 지정할 수 있다.
+#### none
+컨테이너가 네트워크 기능이 필요 없을 때 혹은  커스텀 네트워킹을 사용해야할 니즈가 있을 때, 기본 드라이버를 none으로 설정하고 사용할 수 있다.
+```shell
+docker run -i -t --net none ubuntu:focal
+```
+
+- `docker inspect`로 확인해보면 IPAddress가 할당되어 있지 않은것을 확인할 수 있다.
+![](images/Pasted%20image%2020221101115450.png)
+- apt update 사용시 네트워크 오류가 발생하는 것을 확인할 수 있다.
+![](images/Pasted%20image%2020221101115637.png)
