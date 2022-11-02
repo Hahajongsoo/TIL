@@ -199,3 +199,37 @@ docker load -i ubuntu_focal.tar
 	- build에서는 `package*.json`  을 기준으로 node.js 패키지를 실행한다.
 	- release 에서는 `COPY --from=build` 에서 build 스테이지에서 copy 해오는 것을 확인할 수 있다. 빌드스테이지에서 빌드된 node.js 패키지들을 release 스테이지로 복사해온다. 이후에 app 소스코드를 복사해온다.
 - 빌드 의존성에 따른 용량을 줄일 수 있게 해준다.
+
+# 도커 데몬 디버깅
+주로 `docker system` 아래에 있는 서브커맨드를 이용한다.
+```shell
+# 해당 시스템 정보를 알고자 할 때 사용할 수 있다.
+docker system info
+```
+
+```shell
+# alias가 설정 되어있어 docker events 명령어로도 사용할 수 있다.
+# 스트리밍 형식으로 새롭게 발생하는 도커 이벤트들이 해당 셸로 흘러들어오게된다.
+docker system events
+```
+- 왼쪽에 nginx 컨테이너가 실행되는 과정을 출력하는 것을 볼 수 있다.
+![](images/Pasted%20image%2020221102141408.png)
+- 각각의 운영체제에서 도커를 어떻게 실행시키느냐에 따라서 시스템 로그를 통해서 확인할 수도 있다.
+	- ubuntu의 경우 `journalctl -u docker` 명령어를 통해서 docker 이벤트를 확인할 수 있다.
+
+```shell
+# 도커에서 디스크 사용량을 확인할 수 있다. 
+# reclaimable 은 도커 데몬이 회수할 수 있는 자원의 양이다.
+docker system df 
+```
+
+```shell
+# 정리할 수 있는 것들 모두를 정리할 수 있다.
+docker system prune
+```
+
+```shell
+# 각각의 컨테이너별로 리소스 사용을 어떻게 하고 있는지 확인할 수 있다.
+docker stats
+```
+
