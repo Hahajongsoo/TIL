@@ -4,7 +4,96 @@
 이 부분에는 DB에 연동된 부분이 없기 때문에 웹 서버 종료시 갖고있는 데이터가 모두 사라지는 문제가 있었다. 이를 해결하기 위해서 DB를 연동하여 웹 서버가 종료되더라도 데이터를 가지고 있게 개선하였다.
 
 # go에서 mysql 연동
+go의 standard library로 database/sql 을 제공한다. sql 패키지는 SQL 혹은 SQL-like 데이터베이스의 제네릭 인터페이스를 제공한다. sql  패키지는 데이터베이스 driver와 함께 사용해야하며 다양한 SQL driver가 존재한다. (Hive, Databricks, BigQuery, MySQL, Oracle, Postgres, SQLite, Snowflake 등)
+context cancellation을 지원하지 않는 드라이버는 쿼리가 완료되기 전까지 반환되지 않는다. 
+SQLInterface의 예시는 [여기서](https://github.com/golang/go/wiki/SQLInterface) 확인할 수 있다.
 
+## Connecting to a database
+database handle을 만드는데 `Open` 이 사용된다.
+```go
+db, err := sql.Open(driver, dataSourceName)
+```
+`driver`는 데이터베이스 드라이버를 특정하고, `dataSourceName`은 데이터베이스 이름과 인증  credentials 같은 특정 데이터베이스 연결 정보를 나타낸다.
+`Open`은 데이터베이스 연결을 직접 여는 것이 아니다. 쿼리가 만들어질 때 연결이 생성된다. 쿼리를 생성하기 전에 연결이 만들어졌는지 검증하기 위해서 `PingContext` 메소드를 사용하면 된다.
+```go
+if err := db.PingContext(ctx); err != nil {
+	log.Fatal(err)
+}
+```
+사용하고 나서 `Close` 를 사용하여 데이터베이스를 닫는다.
 
+## Executing Queries
+`ExecContext`는 row를 반환하지 않는 쿼리에 사용된다.
+```go
+result, err := db.ExecContext(ctx,
+		"INSERT INTO users (name, age) VALUES ($1, $2)",
+		"gopher",
+		27,
+)
+```
+result는 마지막 insert ID 와 영향 받은 row의 수를 포함한다. 이는 데이터베이스에 따라 다르다.
+
+`QueryContext` 는 검색에 사용된다.
+```go
+rows, err := db.QueryContext(ctx, "SELECT name FROM users WHERE age = $1", age)
+if err != nil {
+	log.Fatal(err)
+}
+defer rows.Close()
+for rows.Next() {
+	var name string
+	if err := rows.Scan(&name); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s is %d\n", name, age)
+}
+if err := rows.Err(); err != nil {
+	log.Fatal(err)
+}
+```
+
+`QueryRowContext`는 단일 row를 검색할 때 사용된다.
+```go
+var age int64
+err := db.QueryRowContext(ctx, "SETECT age FROM users WHERE name = $1", name).Scan(&age)
+```
+
+Prepared statements는 `PrepareContext`로 생성된다.
+```go
+age := 27
+stmt, err := db.PrepareContext(ctx, "SELETC name FROM users WHERE age = $1")
+if err != nil {
+	log.Fatal(err)
+}
+rows, err := stmt.Query(age)
+```
+
+`ExecContext`, `QueryContext`, `QueryRowContext` 는 statement 로 호출된다. 사용후에 statment는 `Close` 로 종료돼야 한다.
+
+## Transactions
+트랜젝션은 `BeginTX`로 시작된다.
+```go
+tx, err := db.BeginTX(ctx, nil)
+if err != nil {
+	log.Faral(err)
+}
+```
+`ExecContext`, `QueryContext`, `QueryRowContext`, `PrepareContext` 메소드들이 트랜젝션에 사용될 수 있다.
+트랜젝션은 `Commit` 이나 `Rollback` 을 호출하면서 종료돼야 한다.
+
+## NULL 처리
+데이터베이스 컬럼이 null이 가능하다면 null 값을 지원하는 타입을 `Scan`에 넘겨줘야 한다.
+```go
+var name sql.NullString
+err := db.QueryRowContext(ctx, "SELETC name FROM names WHERE id = $1", id).Scan(&name)
+if name.Valid {
+	// use name.String
+} else {
+	// value is NULL
+}
+```
+
+ `NullByte`, `NullBool`, `NullFloat64`, `NullInt64`, `NullInt32` `NullInt16`, `NullString`, `NullTime` 만 `database/sql` 에 구현되어 있다. 특정 데이터베이스에 구현된 null 타입은 데이터베이스 드라이버에 맡긴다. 
+ NULL 을 지원하는 사용자 정의 타입은  `database/sql/driver.Valuer` 과 `database/sql.Scanner` 인터페이스를 구현하는 것으로 생성할 수 있다.
 # hard delete 와 soft delete
 soft delete 를 사용하는 이유는  여러 이유가 있지만 크게 법적 문제등으로 인해 해당 내용을 가지고있을 필요가 있는 경우 그리고 데이터가 많아짐에 따라 인덱스 재조정에 시간이 오래걸리는 경우 때문에 사용하는 것을 생각할 수 있다.
