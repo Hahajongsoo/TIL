@@ -297,7 +297,7 @@ prometheus:
 ![](images/Pasted%20image%2020230324221932.png)
 
 # grafana 대시보드 추가로 import하기
-Istio의 메트릭을 수집하는 servicMonitor와 podMonitor를 추가하고 나니 grafana 대시보드도 필요해졌습니다. 이 또한 헬름으로 설치시에 바로 추가할 수 있도록 하고자 했습니다.
+Istio의 메트릭을 수집하는 servicMonitor와 podMonitor를 추가하고 나니 grafana 대시보드도 필요해졌습니다. 이 또한 헬름으로 설치시에 바로 추가할 수 있도록 하고자 했습니다.ㅔ
 kube-prometheus-stack은 grafana/grafana 헬름 차트를 dependency로 갖고 있기 때문에 해당 차트의 value 파일을 참조해도 됩니다. 해당 value 파일을 참고하면 dashboard provider와 dashboards 필드를 사용해서 grafana dashboard 웹사이트에 있는 대시보드들을 import 할 수 있습니다.
 ```yaml
 grafana:
