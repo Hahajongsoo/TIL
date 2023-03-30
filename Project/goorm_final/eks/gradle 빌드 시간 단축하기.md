@@ -6,7 +6,7 @@
 
 먼저 도커에서 빌드 시간을 단축할 수 있는 방식을 알아보겠습니다.
 
-# docker 사용
+# 1. docker 사용
 gradle로 빌드를 진행하면 프로젝트에서 필요한 plugin과 dependency를 다운로드 합니다. 로컬에서 진행하는 경우에는 해당 정보들이 캐시로 남아 이후 빌드시 시간이 단축됩니다. 하지만 docker image를 사용하여 컨테이너 안에서 `gradle build` 를 진행하는 경우 해당 컨테이너에는 캐시가 없기 때문에 빌드마다 dependency를 다운로드하여 시간이 걸리게 됩니다. 
 일반적인 도커 이미지를 빌드하는 Dockerfile의 형태는 다음과 같습니다.
 
@@ -42,7 +42,7 @@ ENTRYPOINT [ "java", "-jar", "build/libs/config-server-0.0.1-SNAPSHOT.jar" ]
 
 도커 이미지를 빌드하는 과정에서는 볼륨 마운트를 사용할 수 없고, gradle 캐시를 COPY나 ADD를 사용하여 옮기는 경우 결국 로컬에서 프로젝트 별로 해당 캐시를 다시 관리해야하기 때문에 번거로운 부분이 있습니다. 이러한 부분을 dependency를 다운로드하는 부분을 도커 이미지 레이어로 만들어 캐싱하는 방법으로 해결할 수 있습니다.
 
-## dependency 다운로드 과정을 layer로 캐싱
+## 1.1 dependency 다운로드 과정을 layer로 캐싱
 도커 파일을 다음과 같이 수정합니다.
 
 ```dockerfile
@@ -129,7 +129,7 @@ ENTRYPOINT [ "java", "-jar", "config-server-0.0.1-SNAPSHOT.jar" ]
 
 위처럼 도커 파일을 작성하면 gradle 로 자바 프로젝트를 빌드하고 docker 이미지를 빌드하는 것을 한 번에 할 수 있습니다. 하지만 젠킨스를 이용하면서 파이프라인에 각 단계를 나눠서 각 단계의 정상 동작을 파악하는 것이 필요하다고 생각되어 각 단계를 나누기로 했습니다. 그러면 앞서 이야기한 것 처럼 도커 이미지레이어를 이용한 캐싱을 사용할 수는 없습니다. 또한 젠킨스 노드로 쿠버네티스 파드를 이용하기 때문에 파드 상에서 gradle 캐시를 이용할 방법을 생각해봐야 했습니다.
 
-# jenkins on kubernetes 사용
+# 2. jenkins on kubernetes 사용
 먼저 젠킨스를 쿠버네티스 위에서 사용하는 경우 쿠버네티스 파드를 젠킨스 노드로 이용합니다. 젠킨스의 Jenkins 관리 > 노드 관리 > Configure Clouds 에서 쿠버네티스 api 서버와 통신하여 쿠버네티스 파드를 노드로 사용하게 설정할 수 있습니다. 쿠버네티스 위에 젠킨스를 설치하고 쿠버네티스 플러그인을 설치해야합니다. helm으로 쉽게 설치할 수 있습니다. [링크](https://www.jenkins.io/doc/book/installing/kubernetes/#install-jenkins-with-helm-v3)
 
 ![](images/Pasted%20image%2020230331024511.png)
@@ -185,7 +185,7 @@ Containers:
 
 ![](images/Pasted%20image%2020230331025000.png)
 
-## 파이프라인 작성
+## 2.1 파이프라인 작성
 파이프라인은 다음과 같이 gradle test, build, docker image build 의 단계로 진행되게 작성했습니다. 하지만 이 경우에는 파드에 캐시가 있지 않기 때문에 매번 빌드가 오래 걸리게 됩니다.
 
 ```groovy
@@ -261,7 +261,7 @@ spec:
 
 빌드시 오래 걸리는 것은 gradle test, build 부분이기 때문에 gradle 캐시를 사용할 수 있으면 될 것이라고 생각했습니다. 그래서 persistentVolume을 이용하여 캐시를 저장하고 이를 파이프라인 빌드마다 마운트하는 것을 적용해봤습니다.
 
-## persistentVolumeClaim 사용
+## 2.2 persistentVolumeClaim 사용
 먼저 지금 프로젝트에서는 AWS EKS를 사용하고 있고 기본 스토리지 클래스로 gp2를 사용하고 있습니다. 또한 aws ebs csi driver를 사용하고 있기 때문에 persistentVolume에 대한 동적 프로비저닝도 사용할 수 있습니다. 따라서 pvc만 생성해놓고 pv는 따로 생성하지 않는 점을 유의해주세요.
 
 다음과 같이 pvc를 생성합니다. 현재 젠킨스가 jenkins 네임스페이스에 배포되어 있고 젠킨스 노드로 사용되는 파드도 jenkins 네임스페이스에 생성되기 때문에 pvc를 jenkins 네임스페이스에 생성합니다.
