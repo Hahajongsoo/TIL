@@ -146,6 +146,24 @@ spec:
 
 기존 istio gateway는 http에 대한 설정으로 되어있고 ALB는 HTTPS로 트래픽을 넘겨주기 때문에 내부 서비스에 접근이 불가능한 것을 확인할 수 있습니다.
 
+```yaml
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: monitor-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+```
+
 ![](images/Pasted%20image%2020230323151434.png)
 
 istio gateway에 tls 설정을 추가해주면 이후 내부 서비스에 접근이 가능한 것을 확인할 수 있습니다. 
@@ -164,7 +182,7 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - "httpbin.moamoa-news.com"
+        - "*"
       tls:
         httpsRedirect: true
     - port:
@@ -172,7 +190,7 @@ spec:
         name: https
         protocol: HTTPS
       hosts:
-        - "httpbin.moamoa-news.com"
+        - "*"
       tls:
         credentialName: moamoa-cert
         mode: SIMPLE
