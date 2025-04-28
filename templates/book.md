@@ -17,13 +17,9 @@ modification_date: <% tp.file.last_modified_date("YYYY-MM-DD HH:mm:ss") %>
 
 - 
 
-## 요약
+## 서평
 
-- 
-
-## 느낀 점
-
-- 
+ 
 
 ---
 태그: #독서모임 #서평
