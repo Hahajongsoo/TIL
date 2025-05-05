@@ -9,14 +9,12 @@
 - **로드 밸런싱**: AWS ALB + Istio Ingress Gateway
 - **모니터링**: Prometheus, Grafana, Alertmanager
 - **CI/CD**: Jenkins, Argo Rollout
-- **인증/인가**: Auth0
 - **도메인 관리**: AWS Route53
 - **인증서 관리**: cert-manager, AWS ACM
 
 ## 프로젝트 구조
 ```
 goorm_final/
-├── auth0/           # Auth0 연동 및 설정
 ├── argo rollout/    # Argo Rollout 설정 및 배포 전략
 ├── eks/            # EKS 클러스터 설정 및 관리
 ├── istio/          # Istio 설정 및 서비스 메시 구성
@@ -34,7 +32,6 @@ goorm_final/
 
 ### 2. 보안
 - cert-manager를 통한 자동 인증서 발급 및 관리
-- Auth0을 통한 인증/인가 구현
 - HTTPS 종단간 암호화 구현
 
 ### 3. 모니터링
